@@ -29,6 +29,7 @@ router.register(r'asignatura', escuela_views.AsignaturaViewSet)
 router.register(r'nota', escuela_views.NotaViewSet)
 router.register(r'curso', escuela_views.CursoViewSet)
 router.register(r'programadeestudio', escuela_views.ProgramaDeEstudioViewSet)
+router.register(r'personal_no_docente', viewset=escuela_views.PersonalNoDocenteViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

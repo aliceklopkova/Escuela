@@ -1,23 +1,10 @@
 from rest_framework import viewsets
 from django_auto_prefetching import AutoPrefetchViewSetMixin
-from .models import Estudiante
-from .models import Profesor
-from .models import ProfesorGuia
-from .models import Grupo
-from .models import Grado
-from .models import Asignatura
-from .models import Nota
-from .models import Curso
-from .models import ProgramaDeEstudio
-from .serializers import EstudianteSerializer
-from .serializers import ProfesorSerializer
-from .serializers import ProfesorGuiaSerializer
-from .serializers import GrupoSerializer
-from .serializers import GradoSerializer
-from .serializers import AsignaturaSerializer
-from .serializers import NotaSerializer
-from .serializers import CursoSerializer
-from .serializers import ProgramaDeEstudioSerializer
+from .models import Estudiante, PersonalNoDocente, Nota, Grupo, Grado, Curso, Asignatura, ProgramaDeEstudio, Profesor, \
+    ProfesorGuia
+from .serializers import EstudianteSerializer, PersonalNoDocenteSerializer, CursoSerializer, AsignaturaSerializer, \
+    ProfesorSerializer, ProfesorGuiaSerializer, GradoSerializer, ProgramaDeEstudioSerializer, NotaSerializer, \
+    GrupoSerializer
 
 
 class EstudianteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
@@ -27,7 +14,8 @@ class EstudianteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     queryset = Estudiante.objects.all()
     serializer_class = EstudianteSerializer
     search_fields = ['nombre', 'apellidos', 'grupo', 'grado']
-    filterset_fields = ['nombre', 'apellidos', 'grupo','grado', 'ci', 'reparto', 'municipio', 'provincia', 'genero', 'edad']
+    filterset_fields = ['nombre', 'apellidos', 'grupo', 'grado', 'ci', 'reparto', 'municipio', 'provincia', 'genero']
+
 
 class ProfesorViewSet(viewsets.ModelViewSet):
     """
@@ -91,3 +79,11 @@ class ProgramaDeEstudioViewSet(viewsets.ModelViewSet):
     """
     queryset = ProgramaDeEstudio.objects.all()
     serializer_class = ProgramaDeEstudioSerializer
+
+
+class PersonalNoDocenteViewSet(viewsets.ModelViewSet):
+    """
+    A simple ViewSet for viewing and editing accounts.
+    """
+    queryset = PersonalNoDocente.objects.all()
+    serializer_class = PersonalNoDocenteSerializer

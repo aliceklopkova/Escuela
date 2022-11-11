@@ -1,13 +1,6 @@
 from rest_framework import serializers
-from .models import Estudiante
-from .models import Profesor
-from .models import ProfesorGuia
-from .models import Grado
-from .models import Asignatura
-from .models import Grupo
-from .models import Nota
-from .models import Curso
-from .models import ProgramaDeEstudio
+from .models import Estudiante, PersonalNoDocente, Profesor, ProfesorGuia, ProgramaDeEstudio, Curso, Grado, Grupo, Nota, \
+    Asignatura
 
 
 class EstudianteSerializer(serializers.ModelSerializer):
@@ -63,4 +56,10 @@ class CursoSerializer(serializers.ModelSerializer):
 class ProgramaDeEstudioSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgramaDeEstudio
+        fields = '__all__'
+
+
+class PersonalNoDocenteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PersonalNoDocente
         fields = '__all__'
