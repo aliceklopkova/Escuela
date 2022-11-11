@@ -1,4 +1,41 @@
 from django.db import models
+from django.utils.functional import cached_property
+
+
+class Persona(models.Model):
+    genero_choice = [
+        ('F', 'Femenino'),
+        ('M', 'Masculino')
+    ]
+    nombre = models.CharField(max_length=30)
+    apellidos = models.CharField(max_length=100)
+    fecha_nacimiento = models.DateField()
+    ci = models.CharField(max_length=11, primary_key=True, unique=True)
+    direccion = models.CharField(max_length=200)
+    numero_telefono = models.CharField(max_length=11)
+    reparto = models.CharField(max_length=30)
+    municipio = models.CharField(max_length=30)
+    provincia = models.CharField(max_length=30)
+    genero = models.CharField(max_length=1, choices=genero_choice)
+    def edad(self):
+        return 18
+
+    def __str__(self):
+        return f'{self.nombre} {self.apellidos}'
+
+    class Meta:
+        abstract = True
+
+
+class Cientifico(models.Model):
+    categoria_cientifica_choices = [
+        ('máster', 'máster'),
+        ('doctor', 'doctor'),
+    ]
+    categoria_cientifica = models.CharField(max_length=100, choices=categoria_cientifica_choices, null=True, blank=True)
+
+    class Meta:
+        abstract = True
 
 
 class Grado(models.Model):
@@ -27,7 +64,7 @@ class Grupo(models.Model):
         return self.numero_grupo
 
 
-class Profesor(models.Model):
+class Profesor(Persona, Cientifico):
     categoria_docente_choices = [
         ('Profesor Titular', 'Profesor Titular'),
         ('Profesor Auxiliar', 'Profesor Auxiliar'),
@@ -38,23 +75,9 @@ class Profesor(models.Model):
         ('Profesor de Mérito', 'Profesor de Mérito'),
         ('Profesor Invitado', 'Profesor Invitado')
     ]
-    categoria_cientifica_choices = [
-        ('máster', 'máster'),
-        ('doctor', 'doctor'),
-    ]
-    nombre = models.CharField(max_length=30)
-    apellidos = models.CharField(max_length=100)
-    fecha_nacimiento = models.DateField
-    ci = models.CharField(max_length=11, primary_key=True, unique=True)
-    direccion = models.CharField(max_length=200)
-    numero_telefono = models.CharField(max_length=11)
     categoria_docente = models.CharField(max_length=100, choices=categoria_docente_choices, null=True, blank=True)
-    categoria_cientifica = models.CharField(max_length=100, choices=categoria_cientifica_choices, null=True, blank=True)
     grupos = models.ManyToManyField(Grupo)
     asignatura = models.ManyToManyField(Asignatura)
-
-    def __str__(self):
-        return f'{self.nombre} {self.apellidos}'
 
 
 class ProfesorGuia(Profesor):
@@ -62,31 +85,11 @@ class ProfesorGuia(Profesor):
     profesor = models.OneToOneField(Profesor, on_delete=models.CASCADE, related_name='pg_profesor')
 
 
-class Estudiante(models.Model):
-    genero_choice = [
-        ('F', 'Femenino'),
-        ('M', 'Masculino')
-    ]
-
-    nombre = models.CharField(max_length=30)
-    apellidos = models.CharField(max_length=100)
-    fecha_nacimiento = models.DateField()
-    ci = models.CharField(max_length=11, primary_key=True, unique=True)
-    direccion = models.CharField(max_length=200)
-    reparto = models.CharField(max_length=30)
-    municipio = models.CharField(max_length=30)
-    provincia = models.CharField(max_length=30)
-    numero_telefono = models.CharField(max_length=11)
-    genero = models.CharField(max_length=1, choices=genero_choice)
-    edad = models.IntegerField()
+class Estudiante(Persona):
     nombre_apellido_padre = models.CharField(max_length=150)
     nombre_apellido_madre = models.CharField(max_length=150)
     grado = models.ForeignKey(Grado, on_delete=models.DO_NOTHING, null=True)
     grupo = models.ForeignKey(Grupo, on_delete=models.SET_NULL, null=True)
-
-
-    def __str__(self):
-        return f'{self.nombre} {self.apellidos}'
 
 
 class Nota(models.Model):
@@ -107,6 +110,18 @@ class ProgramaDeEstudio(models.Model):
     asignatura = models.ManyToManyField(Asignatura)
     curso = models.ForeignKey(Curso, on_delete=models.RESTRICT)
     grado = models.ForeignKey(Grado, on_delete=models.RESTRICT)
+    archivo = models.FileField()
 
     def __str__(self):
         return f'{self.curso} {self.grado}'
+
+
+class PersonalNoDocente(Persona, Cientifico):
+    nivel_de_estudio_choices = [
+        ('primario', 'primario'),
+        ('secundario', 'secundario'),
+        ('preuniversitario', 'preuniversitario'),
+        ('universitario', 'universitario')
+    ]
+
+    nivel_de_estudio = models.CharField(max_length=20, choices=nivel_de_estudio_choices, null=True, blank=True)
