@@ -1,10 +1,13 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from django_auto_prefetching import AutoPrefetchViewSetMixin
 from .models import Estudiante, PersonalNoDocente, Nota, Grupo, Grado, Curso, Asignatura, ProgramaDeEstudio, Profesor, \
     ProfesorGuia
 from .serializers import EstudianteSerializer, PersonalNoDocenteSerializer, CursoSerializer, AsignaturaSerializer, \
     ProfesorSerializer, ProfesorGuiaSerializer, GradoSerializer, ProgramaDeEstudioSerializer, NotaSerializer, \
     GrupoSerializer
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class EstudianteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
@@ -13,8 +16,12 @@ class EstudianteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     """
     queryset = Estudiante.objects.all()
     serializer_class = EstudianteSerializer
-    search_fields = ['nombre', 'apellidos', 'grupo', 'grado']
+    search_fields = ['^nombre', '^apellidos']
     filterset_fields = ['nombre', 'apellidos', 'grupo', 'grado', 'ci', 'reparto', 'municipio', 'provincia', 'genero']
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class ProfesorViewSet(viewsets.ModelViewSet):
