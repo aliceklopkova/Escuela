@@ -8,15 +8,17 @@ class Persona(models.Model):
         ('M', 'Masculino')
     ]
     nombre = models.CharField(max_length=30)
-    apellidos = models.CharField(max_length=100)
+    primer_apellido = models.CharField(max_length=100)
+    segundo_apellido = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField()
-    ci = models.CharField(max_length=11, primary_key=True, unique=True)
+    ci = models.CharField(max_length=11, unique=True)
     direccion = models.CharField(max_length=200)
     numero_telefono = models.CharField(max_length=11)
     reparto = models.CharField(max_length=30)
     municipio = models.CharField(max_length=30)
     provincia = models.CharField(max_length=30)
     genero = models.CharField(max_length=1, choices=genero_choice)
+
     def edad(self):
         return 18
 
@@ -93,8 +95,13 @@ class Estudiante(Persona):
 
 
 class Nota(models.Model):
+    tipo_choice = [
+        ('ES', 'Evaluación Sistemática'),
+        ('EP', 'Evaluación Parcial'),
+        ('EF', 'Evaluación Final')
+    ]
     valor = models.IntegerField()
-    tipo = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=100, choices=tipo_choice)
     estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE)
     asignatura = models.ForeignKey(Asignatura, on_delete=models.RESTRICT)
 
@@ -116,12 +123,3 @@ class ProgramaDeEstudio(models.Model):
         return f'{self.curso} {self.grado}'
 
 
-class PersonalNoDocente(Persona, Cientifico):
-    nivel_de_estudio_choices = [
-        ('primario', 'primario'),
-        ('secundario', 'secundario'),
-        ('preuniversitario', 'preuniversitario'),
-        ('universitario', 'universitario')
-    ]
-
-    nivel_de_estudio = models.CharField(max_length=20, choices=nivel_de_estudio_choices, null=True, blank=True)
