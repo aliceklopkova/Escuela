@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from django_auto_prefetching import AutoPrefetchViewSetMixin
-from .models import Estudiante, PersonalNoDocente, Nota, Grupo, Grado, Curso, Asignatura, ProgramaDeEstudio, Profesor, \
+from .models import Estudiante, Nota, Grupo, Grado, Curso, Asignatura, ProgramaDeEstudio, Profesor, \
     ProfesorGuia
-from .serializers import EstudianteSerializer, PersonalNoDocenteSerializer, CursoSerializer, AsignaturaSerializer, \
+from .serializers import EstudianteSerializer, CursoSerializer, AsignaturaSerializer, \
     ProfesorSerializer, ProfesorGuiaSerializer, GradoSerializer, ProgramaDeEstudioSerializer, NotaSerializer, \
     GrupoSerializer
 
@@ -16,8 +16,9 @@ class EstudianteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     """
     queryset = Estudiante.objects.all()
     serializer_class = EstudianteSerializer
-    search_fields = ['^nombre', '^apellidos']
-    filterset_fields = ['nombre', 'apellidos', 'grupo', 'grado', 'ci', 'reparto', 'municipio', 'provincia', 'genero']
+    search_fields = ['^nombre', '^primer_apellido', '^segundo_apellido']
+    filterset_fields = ['nombre', 'primer_apellido', 'segundo_apellido', 'grupo', 'grado', 'ci', 'reparto', 'municipio',
+                        'provincia', 'genero']
 
     @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
     def get_filters(self, request, *args, **kwargs):
@@ -30,6 +31,13 @@ class ProfesorViewSet(viewsets.ModelViewSet):
     """
     queryset = Profesor.objects.all()
     serializer_class = ProfesorSerializer
+    search_fields = ['^nombre', '^primer_apellido', '^segundo_apellido']
+    filterset_fields = ['nombre', 'primer_apellido', 'segundo_apellido', 'ci', 'reparto', 'municipio',
+                        'provincia', 'genero', 'categoria_docente', 'asignatura']
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class ProfesorGuiaViewSet(viewsets.ModelViewSet):
@@ -88,9 +96,4 @@ class ProgramaDeEstudioViewSet(viewsets.ModelViewSet):
     serializer_class = ProgramaDeEstudioSerializer
 
 
-class PersonalNoDocenteViewSet(viewsets.ModelViewSet):
-    """
-    A simple ViewSet for viewing and editing accounts.
-    """
-    queryset = PersonalNoDocente.objects.all()
-    serializer_class = PersonalNoDocenteSerializer
+
