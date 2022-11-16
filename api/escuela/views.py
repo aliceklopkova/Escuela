@@ -1,13 +1,13 @@
-from rest_framework import viewsets, status
 from django_auto_prefetching import AutoPrefetchViewSetMixin
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from .models import Estudiante, Nota, Grupo, Grado, Curso, Asignatura, ProgramaDeEstudio, Profesor, \
     ProfesorGuia
 from .serializers import EstudianteSerializer, CursoSerializer, AsignaturaSerializer, \
     ProfesorSerializer, ProfesorGuiaSerializer, GradoSerializer, ProgramaDeEstudioSerializer, NotaSerializer, \
     GrupoSerializer
-
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 
 class EstudianteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
@@ -94,6 +94,3 @@ class ProgramaDeEstudioViewSet(viewsets.ModelViewSet):
     """
     queryset = ProgramaDeEstudio.objects.all()
     serializer_class = ProgramaDeEstudioSerializer
-
-
-
