@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.functional import cached_property
 
 
 class Persona(models.Model):
@@ -23,7 +22,7 @@ class Persona(models.Model):
         return 18
 
     def __str__(self):
-        return f'{self.nombre} {self.apellidos}'
+        return f'{self.nombre} {self.primer_apellido}'
 
     class Meta:
         abstract = True
@@ -117,9 +116,7 @@ class ProgramaDeEstudio(models.Model):
     asignatura = models.ManyToManyField(Asignatura)
     curso = models.ForeignKey(Curso, on_delete=models.RESTRICT)
     grado = models.ForeignKey(Grado, on_delete=models.RESTRICT)
-    archivo = models.FileField()
+    archivo = models.FileField(null=True)
 
     def __str__(self):
         return f'{self.curso} {self.grado}'
-
-
