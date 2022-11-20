@@ -33,7 +33,7 @@ class ProfesorViewSet(viewsets.ModelViewSet):
     serializer_class = ProfesorSerializer
     search_fields = ['^nombre', '^primer_apellido', '^segundo_apellido']
     filterset_fields = ['nombre', 'primer_apellido', 'segundo_apellido', 'ci', 'reparto', 'municipio',
-                        'provincia', 'genero', 'categoria_docente', 'asignatura']
+                        'provincia', 'genero', 'categoria_docente', 'asignaturas']
 
     @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
     def get_filters(self, request, *args, **kwargs):
