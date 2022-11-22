@@ -4,43 +4,6 @@ from .models import Estudiante, Profesor, ProfesorGuia, ProgramaDeEstudio, Curso
     Asignatura
 
 
-class EstudianteSerializer(serializers.ModelSerializer):
-    object_name = serializers.SerializerMethodField()
-
-    def get_object_name(self, obj):
-        return obj.__str__()
-
-    class Meta:
-        model = Estudiante
-        fields = ['id', 'nombre', 'primer_apellido', 'segundo_apellido', 'fecha_nacimiento', 'ci', 'direccion',
-                  'numero_telefono', 'reparto', 'municipio', 'provincia', 'genero', 'edad', 'nombre_apellido_padre',
-                  'nombre_apellido_madre', 'grado', 'grupo', 'object_name']
-
-
-class ProfesorSerializer(serializers.ModelSerializer):
-    object_name = serializers.SerializerMethodField()
-
-    def get_object_name(self, obj):
-        return obj.__str__()
-
-    class Meta:
-        model = Profesor
-        fields = ['id', 'nombre', 'primer_apellido', 'segundo_apellido', 'fecha_nacimiento', 'ci', 'direccion',
-                  'numero_telefono', 'reparto', 'municipio', 'provincia', 'genero', 'edad', 'grado_academico',
-                  'categoria_docente', 'grupos', 'asignaturas', 'object_name']
-
-
-class ProfesorGuiaSerializer(serializers.ModelSerializer):
-    object_name = serializers.SerializerMethodField()
-
-    def get_object_name(self, obj):
-        return obj.__str__()
-
-    class Meta:
-        model = ProfesorGuia
-        fields = ['id', 'grupo', 'profesor', 'object_name']
-
-
 class GradoSerializer(serializers.ModelSerializer):
     object_name = serializers.SerializerMethodField()
 
@@ -49,6 +12,18 @@ class GradoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Grado
+        fields = '__all__'
+
+
+class GrupoSerializer(serializers.ModelSerializer):
+    object_name = serializers.SerializerMethodField()
+    grado = GradoSerializer()
+
+    def get_object_name(self, obj):
+        return obj.__str__()
+
+    class Meta:
+        model = Grupo
         fields = '__all__'
 
 
@@ -63,19 +38,53 @@ class AsignaturaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GrupoSerializer(serializers.ModelSerializer):
+class EstudianteSerializer(serializers.ModelSerializer):
     object_name = serializers.SerializerMethodField()
+    grado = GradoSerializer()
+    grupo = GrupoSerializer()
 
     def get_object_name(self, obj):
         return obj.__str__()
 
     class Meta:
-        model = Grupo
-        fields = '__all__'
+        model = Estudiante
+        fields = ['id', 'nombre', 'primer_apellido', 'segundo_apellido', 'fecha_nacimiento', 'ci', 'direccion',
+                  'numero_telefono', 'reparto', 'municipio', 'provincia', 'genero', 'edad', 'nombre_apellido_padre',
+                  'nombre_apellido_madre', 'grado', 'grupo', 'object_name']
+
+
+class ProfesorSerializer(serializers.ModelSerializer):
+    object_name = serializers.SerializerMethodField()
+    grupos = GrupoSerializer(many=True)
+    asignaturas = AsignaturaSerializer(many=True)
+
+    def get_object_name(self, obj):
+        return obj.__str__()
+
+    class Meta:
+        model = Profesor
+        fields = ['id', 'nombre', 'primer_apellido', 'segundo_apellido', 'fecha_nacimiento', 'ci', 'direccion',
+                  'numero_telefono', 'reparto', 'municipio', 'provincia', 'genero', 'edad', 'grado_academico',
+                  'categoria_docente', 'grupos', 'asignaturas', 'object_name']
+
+
+class ProfesorGuiaSerializer(serializers.ModelSerializer):
+    object_name = serializers.SerializerMethodField()
+    profesor = ProfesorSerializer()
+    grupo = GrupoSerializer()
+
+    def get_object_name(self, obj):
+        return obj.__str__()
+
+    class Meta:
+        model = ProfesorGuia
+        fields = ['id', 'grupo', 'profesor', 'object_name']
 
 
 class NotaSerializer(serializers.ModelSerializer):
     object_name = serializers.SerializerMethodField()
+    estudiante = EstudianteSerializer()
+    asignatura = AsignaturaSerializer()
 
     def get_object_name(self, obj):
         return obj.__str__()
@@ -98,6 +107,9 @@ class CursoSerializer(serializers.ModelSerializer):
 
 class ProgramaDeEstudioSerializer(serializers.ModelSerializer):
     object_name = serializers.SerializerMethodField()
+    asignaturas = AsignaturaSerializer(many=True)
+    curso = CursoSerializer()
+    grado = GradoSerializer(    )
 
     def get_object_name(self, obj):
         return obj.__str__()
