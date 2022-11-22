@@ -171,7 +171,7 @@ class CursoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProgramaDeEstudioSerializer(serializers.ModelSerializer):
+class ProgramaDeEstudioReadSerializer(serializers.ModelSerializer):
     object_name = serializers.SerializerMethodField()
     asignaturas = AsignaturaSerializer(many=True)
     curso = CursoSerializer()
@@ -180,6 +180,12 @@ class ProgramaDeEstudioSerializer(serializers.ModelSerializer):
     def get_object_name(self, obj):
         return obj.__str__()
 
+    class Meta:
+        model = ProgramaDeEstudio
+        fields = '__all__'
+
+
+class ProgramaDeEstudioWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgramaDeEstudio
         fields = '__all__'
