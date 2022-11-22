@@ -20,6 +20,9 @@ from api.escuela import views as escuela_views
 from rest_framework.authtoken import views as authtoken_views
 
 router = routers.DefaultRouter()
+router.register(r'user', escuela_views.UserViewSet)
+router.register(r'group', escuela_views.GroupViewSet)
+router.register(r'permission', escuela_views.PermissionViewSet)
 router.register(r'estudiante', escuela_views.EstudianteViewSet)
 router.register(r'profesor', escuela_views.ProfesorViewSet)
 router.register(r'profesor-guia', escuela_views.ProfesorGuiaViewSet)
