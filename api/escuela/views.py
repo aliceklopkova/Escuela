@@ -7,7 +7,8 @@ from rest_framework.response import Response
 from .models import Estudiante, Nota, Grupo, Grado, Curso, Asignatura, ProgramaDeEstudio, Profesor, \
     ProfesorGuia
 from .serializers import CursoSerializer, AsignaturaSerializer, ProfesorReadGuiaSerializer, ProfesorWriteGuiaSerializer, \
-    GradoSerializer, ProgramaDeEstudioSerializer, GrupoReadSerializer, GrupoWriteSerializer, UserSerializer, \
+    GradoSerializer, ProgramaDeEstudioReadSerializer, ProgramaDeEstudioWriteSerializer, GrupoReadSerializer, \
+    GrupoWriteSerializer, UserSerializer, \
     GroupSerializer, PermissionSerializer, ProfesorReadSerializer, ProfesorWriteSerializer, EstudianteWriteSerializer, \
     EstudianteReadSerializer, NotaReadSerializer, NotaWriteSerializer
 
@@ -67,7 +68,7 @@ class ProfesorViewSet(viewsets.ModelViewSet):
 
     search_fields = ['^nombre', '^primer_apellido', '^segundo_apellido']
     filterset_fields = ['nombre', 'primer_apellido', 'segundo_apellido', 'ci', 'reparto', 'municipio',
-                        'provincia', 'genero', 'categoria_docente', 'asignaturas']
+                        'provincia', 'genero', 'categoria_docente', 'asignaturas', 'grado_academico']
 
     def get_serializer_class(self):
         return assign_serializer(self, ProfesorReadSerializer, ProfesorReadSerializer,
@@ -83,10 +84,16 @@ class ProfesorGuiaViewSet(viewsets.ModelViewSet):
     A simple ViewSet for viewing and editing accounts.
     """
     queryset = ProfesorGuia.objects.all()
+    filterset_fields = ['profesor', 'grupo']
+    search_fields = ['^profesor__nombre', '^profesor__primer_apellido']
 
     def get_serializer_class(self):
         return assign_serializer(self, ProfesorReadGuiaSerializer, ProfesorReadGuiaSerializer,
                                  ProfesorWriteGuiaSerializer)
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class GrupoViewSet(viewsets.ModelViewSet):
@@ -94,9 +101,15 @@ class GrupoViewSet(viewsets.ModelViewSet):
     A simple ViewSet for viewing and editing accounts.
     """
     queryset = Grupo.objects.all()
+    filterset_fields = ['grado']
+    search_fields = ['^grado__nombre']
 
     def get_serializer_class(self):
         return assign_serializer(self, GrupoReadSerializer, GrupoReadSerializer, GrupoWriteSerializer)
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class GradoViewSet(viewsets.ModelViewSet):
@@ -104,7 +117,13 @@ class GradoViewSet(viewsets.ModelViewSet):
     A simple ViewSet for viewing and editing accounts.
     """
     queryset = Grado.objects.all()
+    filterset_fields = []
+    search_fields = []
     serializer_class = GradoSerializer
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class AsignaturaViewSet(viewsets.ModelViewSet):
@@ -113,10 +132,12 @@ class AsignaturaViewSet(viewsets.ModelViewSet):
     """
     queryset = Asignatura.objects.all()
     serializer_class = AsignaturaSerializer
+    filterset_fields = []
+    search_fields = ['^nombre']
 
     @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
     def get_filters(self, request, *args, **kwargs):
-        return Response(data={'filters': []}, status=status.HTTP_200_OK)
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class NotaViewSet(viewsets.ModelViewSet):
@@ -141,7 +162,13 @@ class CursoViewSet(viewsets.ModelViewSet):
     A simple ViewSet for viewing and editing accounts.
     """
     queryset = Curso.objects.all()
+    filterset_fields = []
+    search_fields = []
     serializer_class = CursoSerializer
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class ProgramaDeEstudioViewSet(viewsets.ModelViewSet):
@@ -149,4 +176,13 @@ class ProgramaDeEstudioViewSet(viewsets.ModelViewSet):
     A simple ViewSet for viewing and editing accounts.
     """
     queryset = ProgramaDeEstudio.objects.all()
-    serializer_class = ProgramaDeEstudioSerializer
+    filterset_fields = ['asignaturas', 'curso', 'grado']
+    search_fields = []
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
+
+    def get_serializer_class(self):
+        return assign_serializer(self, ProgramaDeEstudioReadSerializer, ProgramaDeEstudioReadSerializer,
+                                 ProgramaDeEstudioWriteSerializer)
