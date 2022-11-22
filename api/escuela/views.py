@@ -71,6 +71,9 @@ class AsignaturaViewSet(viewsets.ModelViewSet):
     queryset = Asignatura.objects.all()
     serializer_class = AsignaturaSerializer
 
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': []}, status=status.HTTP_200_OK)
 
 class NotaViewSet(viewsets.ModelViewSet):
     """
@@ -78,6 +81,12 @@ class NotaViewSet(viewsets.ModelViewSet):
     """
     queryset = Nota.objects.all()
     serializer_class = NotaSerializer
+    search_fields = ['^estudiante__nombre', '^estudiante__primer_apellido', 'asignatura__nombre']
+    filterset_fields = ['estudiante', 'asignatura', 'tipo']
+
+    @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
+    def get_filters(self, request, *args, **kwargs):
+        return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
 
 
 class CursoViewSet(viewsets.ModelViewSet):
