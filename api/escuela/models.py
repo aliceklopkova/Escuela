@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.contrib.auth.models import User
 
 
 class Persona(models.Model):
@@ -96,6 +97,7 @@ class Profesor(Persona, Cientifico):
     categoria_docente = models.CharField(max_length=100, choices=categoria_docente_choices, null=True, blank=True)
     grupos = models.ManyToManyField(Grupo)
     asignaturas = models.ManyToManyField(Asignatura)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
 
 
 class ProfesorGuia(models.Model):
