@@ -68,7 +68,7 @@ class ProfesorViewSet(viewsets.ModelViewSet):
 
     search_fields = ['^nombre', '^primer_apellido', '^segundo_apellido']
     filterset_fields = ['nombre', 'primer_apellido', 'segundo_apellido', 'ci', 'reparto', 'municipio',
-                        'provincia', 'genero', 'categoria_docente', 'asignaturas', 'grado_academico']
+                        'provincia', 'genero', 'categoria_docente', 'grado_academico']
 
     def get_serializer_class(self):
         return assign_serializer(self, ProfesorReadSerializer, ProfesorReadSerializer,
@@ -176,8 +176,8 @@ class ProgramaDeEstudioViewSet(viewsets.ModelViewSet):
     A simple ViewSet for viewing and editing accounts.
     """
     queryset = ProgramaDeEstudio.objects.all()
-    filterset_fields = ['asignaturas', 'curso', 'grado']
-    search_fields = []
+    filterset_fields = ['asignatura', 'curso', 'grado']
+    search_fields = ['asignatura']
 
     @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
     def get_filters(self, request, *args, **kwargs):

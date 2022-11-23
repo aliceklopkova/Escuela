@@ -173,7 +173,7 @@ class CursoSerializer(serializers.ModelSerializer):
 
 class ProgramaDeEstudioReadSerializer(serializers.ModelSerializer):
     object_name = serializers.SerializerMethodField()
-    asignaturas = AsignaturaSerializer(many=True)
+    asignatura = AsignaturaSerializer()
     curso = CursoSerializer()
     grado = GradoSerializer()
 
