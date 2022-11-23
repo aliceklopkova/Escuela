@@ -138,10 +138,14 @@ class Curso(models.Model):
 
 
 class ProgramaDeEstudio(models.Model):
-    asignaturas = models.ManyToManyField(Asignatura)
+    asignatura = models.ForeignKey(Asignatura, on_delete=models.RESTRICT)
     curso = models.ForeignKey(Curso, on_delete=models.RESTRICT)
     grado = models.ForeignKey(Grado, on_delete=models.RESTRICT)
-    archivo = models.FileField(null=True, upload_to='uploads/')
+    horas_clases = models.IntegerField(null=True)
+    frecuencia = models.IntegerField(null=True)
 
     def __str__(self):
         return f'{self.curso} {self.grado}'
+
+    class Meta:
+        unique_together = ('asignatura', 'curso', 'grado')
