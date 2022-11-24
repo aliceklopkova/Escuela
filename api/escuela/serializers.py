@@ -189,3 +189,7 @@ class ProgramaDeEstudioWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgramaDeEstudio
         fields = '__all__'
+
+
+class NotaPromedioGradoSerializer(serializers.Serializer):
+    grado = serializers.CharField()
