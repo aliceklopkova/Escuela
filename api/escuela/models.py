@@ -1,7 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.contrib.auth.models import User
 
 
 class Persona(models.Model):
@@ -25,8 +25,9 @@ class Persona(models.Model):
     def edad(self):
         if self.fecha_nacimiento:
             today = timezone.now()
-            return today.year - self.fecha_nacimiento.year - (
+            _edad = today.year - self.fecha_nacimiento.year - (
                     (today.month, today.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day))
+            return str(_edad)
         return None
 
     def __str__(self):
@@ -95,8 +96,8 @@ class Profesor(Persona, Cientifico):
         ('profesor_invitado', 'Profesor Invitado')
     ]
     categoria_docente = models.CharField(max_length=100, choices=categoria_docente_choices, null=True, blank=True)
-    grupos = models.ManyToManyField(Grupo)
-    asignaturas = models.ManyToManyField(Asignatura)
+    grupos = models.ManyToManyField(Grupo, null=True, blank=True)
+    asignaturas = models.ManyToManyField(Asignatura, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
 
 
@@ -114,6 +115,21 @@ class Estudiante(Persona):
     grado = models.ForeignKey(Grado, on_delete=models.DO_NOTHING, null=True)
     grupo = models.ForeignKey(Grupo, on_delete=models.SET_NULL, null=True)
 
+    def promedio_sistematicas(self):
+        notas = self.nota_set.filter(tipo='es')
+        return sum([nota.valor for nota in notas]) / len([nota.valor for nota in notas])
+
+    def promedio_parciales(self):
+        notas = self.nota_set.filter(tipo='ep')
+        return ((sum([nota.valor for nota in notas]) / len([nota.valor for nota in notas])) * 30) / 100
+
+    def promedio_finales(self):
+        notas = self.nota_set.filter(tipo='ef')
+        return ((sum([nota.valor for nota in notas]) / len([nota.valor for nota in notas])) * 50) / 100
+
+    def promedio(self):
+        return self.promedio_sistematicas() + self.promedio_parciales() + self.promedio_finales()
+
 
 class Nota(models.Model):
     tipo_choice = [
@@ -127,7 +143,7 @@ class Nota(models.Model):
     asignatura = models.ForeignKey(Asignatura, on_delete=models.RESTRICT)
 
     def __str__(self):
-        return self.valor
+        return f'{self.estudiante.__str__()} {self.tipo}'
 
 
 class Curso(models.Model):
