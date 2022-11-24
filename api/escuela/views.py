@@ -10,7 +10,7 @@ from .serializers import CursoSerializer, AsignaturaSerializer, ProfesorReadGuia
     GradoSerializer, ProgramaDeEstudioReadSerializer, ProgramaDeEstudioWriteSerializer, GrupoReadSerializer, \
     GrupoWriteSerializer, UserSerializer, \
     GroupSerializer, PermissionSerializer, ProfesorReadSerializer, ProfesorWriteSerializer, EstudianteWriteSerializer, \
-    EstudianteReadSerializer, NotaReadSerializer, NotaWriteSerializer
+    EstudianteReadSerializer, NotaReadSerializer, NotaWriteSerializer, NotaPromedioGradoSerializer
 
 
 def assign_serializer(obj, list_serializer, read_serializer, write_serializer):
@@ -52,12 +52,31 @@ class EstudianteViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
                         'provincia', 'genero']
 
     def get_serializer_class(self):
+        if self.get_view_name() == "Get Promedio General Grado":
+            return NotaPromedioGradoSerializer
         return assign_serializer(self, EstudianteReadSerializer, EstudianteReadSerializer,
                                  EstudianteWriteSerializer)
 
     @action(detail=False, methods=["GET"], name="Get Filters", url_path="filters")
     def get_filters(self, request, *args, **kwargs):
         return Response(data={'filters': self.filterset_fields}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["POST"], name="Get Promedio General Grado", url_path="promedio_grado")
+    def get_promedio_grado(self, request, *args, **kwargs):
+        grado = ""
+        if request.method == "POST":
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                grado = serializer.data['grado']
+        if request.method == "GET":
+            grado = request.query_params['grado']
+        estudiantes = Estudiante.objects.filter(grado=grado)
+        if len(estudiantes) > 0 :
+            promedios = [estudiante.promedio() for estudiante in estudiantes]
+            promedio_general = sum(promedios)/len(promedios)
+        else:
+            promedio_general = 0
+        return Response({'promedio': promedio_general}, status=status.HTTP_200_OK)
 
 
 class ProfesorViewSet(viewsets.ModelViewSet):
